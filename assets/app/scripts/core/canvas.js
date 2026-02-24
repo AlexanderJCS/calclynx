@@ -107,6 +107,18 @@ class MathBoard {
 				e.preventDefault();
 				this.clipboard.pasteGroups();
 				break;
+			case 'z':
+				e.preventDefault();
+				if (e.shiftKey) {
+					this.fileManager.redo();
+				} else {
+					this.fileManager.undo();
+				}
+				break;
+			case 'y':
+				e.preventDefault();
+				this.fileManager.redo();
+				break;
 		}
 	}
 

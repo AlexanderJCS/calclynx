@@ -1,6 +1,7 @@
 import { FileWriter } from './filewriter.js';
 import { FileReader } from './filereader.js';
 import { cloudManager } from '../core/cloud.js';
+import { HistoryManager } from '../core/history.js';
 
 class FileManager {
 	constructor(board) {
@@ -11,6 +12,7 @@ class FileManager {
 
 		this.fileReader = new FileReader(board, this);
 		this.fileWriter = new FileWriter(board, this);
+		this.historyManager = new HistoryManager();
 
 		this.updateFileTitle();
 	}
@@ -37,11 +39,35 @@ class FileManager {
 	}
 
 	async saveState() {
+		if (!this.historyManager.isRestoring) {
+			this.historyManager.push(this.fileWriter.serializeState());
+		}
 		return await this.fileWriter.saveState();
 	}
 
-	loadState() {
-		return this.fileReader.loadState();
+	initHistory() {
+		this.historyManager.initialize(this.fileWriter.serializeState());
+	}
+
+	undo() {
+		const stateStr = this.historyManager.undo();
+		if (!stateStr) return;
+		this.historyManager.isRestoring = true;
+		this.fileReader.importData(stateStr, false);
+		this.historyManager.isRestoring = false;
+	}
+
+	redo() {
+		const stateStr = this.historyManager.redo();
+		if (!stateStr) return;
+		this.historyManager.isRestoring = true;
+		this.fileReader.importData(stateStr, false);
+		this.historyManager.isRestoring = false;
+	}
+
+	async loadState() {
+		await this.fileReader.loadState();
+		this.initHistory();
 	}
 
 	exportData() {

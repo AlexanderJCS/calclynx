@@ -77,13 +77,12 @@ class FileWriter {
 		});
 	}
 
-	async saveState() {
+	serializeState() {
 		let version = "3.0";
 		let hasProseMirrorCapability = window.proseMirrorReady && window.ProseMirror;
 
 		if (!hasProseMirrorCapability) {
 			version = "2.0";
-			console.warn("ProseMirror not available, saving as v2.0 format");
 		}
 
 		const saveData = {
@@ -95,7 +94,17 @@ class FileWriter {
 		this.saveTextGroups(saveData);
 		this.saveImageGroups(saveData);
 
-		const stateString = JSON.stringify(saveData);
+		return JSON.stringify(saveData);
+	}
+
+	async saveState() {
+		const stateString = this.serializeState();
+		const version = (window.proseMirrorReady && window.ProseMirror) ? "3.0" : "2.0";
+		const hasProseMirrorCapability = window.proseMirrorReady && window.ProseMirror;
+
+		if (!hasProseMirrorCapability) {
+			console.warn("ProseMirror not available, saving as v2.0 format");
+		}
 
 		if (!this.fileManager.fileId && this.saveButton) this.saveButton.setSyncing(true);
 

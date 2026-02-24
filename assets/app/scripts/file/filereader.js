@@ -95,7 +95,7 @@ class FileReader {
 			});
 
 			if (shouldSave) {
-				this.fileManager.fileWriter.saveState();
+				this.fileManager.saveState();
 			} else {
 				EquivalenceUtils.updateEquivalenceState();
 			}

@@ -143,6 +143,9 @@ class MathFieldEditor {
 	}
 
 	static attachEditKeydownListener(mathFieldElement, container) {
+		if (mathFieldElement.dataset.listenersAttached === 'true') return;
+		mathFieldElement.dataset.listenersAttached = 'true';
+
 		mathFieldElement.addEventListener('keydown', (event) => {
 			const mathField = MQ(mathFieldElement);
 
